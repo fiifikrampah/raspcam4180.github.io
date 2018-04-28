@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<!--
+	Projection by TEMPLATED	templated.co @templatedco
+	Released for free under the Creative Commons Attribution 3.0 license (templated.co/license)-->
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <title>RaspCam: The Google Assistant Security Camera</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="assets/css/main.css">
+  </head>
+  <body>
+    <!-- Header -->
+    <header id="header">
+      <div class="inner"> <a href="index.html" class="logo"><strong>RaspCam</strong>
+          by 4180</a>
+        <nav id="nav"> <a href="index.html">Home</a> <a href="aboutproject.html">The
+            Project</a> <a href="partslist.html">Requirements</a> <a href="elements.html">Implementation</a>
+        </nav>
+        <a href="#navPanel" class="navPanelToggle"><span class="fa fa-bars"></span></a>
+      </div>
+    </header>
+    <!-- Banner -->
+    <section id="banner">
+      <div class="inner">
+        <header>
+          <h1>Introducing RaspCam</h1>
+          <div id="wrapper">
+            <p>The Google Assistant Security Camera</p>
+          </div>
+        </header>
+        <div class="flex ">
+          <div> <span class="icon fa-microphone"></span>
+            <h3>Speak</h3>
+            <p>Give RaspCam a command</p>
+          </div>
+          <div> <span class="icon fa-volume-up"></span>
+            <h3>Listen</h3>
+            <p>Hear RaspCam's response</p>
+          </div>
+          <div> <span class="icon fa-camera"></span>
+            <h3>View</h3>
+            <p>Observe what RaspCam sees</p>
+          </div>
+        </div>
+        <footer>
+          <div id="wrapper"><a href="aboutproject.html" class="button">Learn
+              More</a></div>
+        </footer>
+      </div>
+    </section>
+    <!-- Three -->
+    <section id="three" class="wrapper align-center">
+      <div class="inner">
+        <div class="flex flex-2">
+          <article>
+            <div class="image round"> <img src="images/pic01.jpg" alt="Pic 01">
+            </div>
+            <header>
+              <h3>The Camera</h3>
+            </header>
+            <p>The RaspCam utilizes the Raspberry Pi Camera v2 module<br>
+              which is connected to the Pi board via the wider ribbon connector
+              cable.<br>
+              It relies on MotionEye on the front-end and motion on the back-end
+              for functionality.</p>
+            <footer> <a href="#" class="button">Learn More</a> </footer>
+          </article>
+          <article>
+            <div class="image round"> <img src="images/pic02.jpg" alt="Pic 02">
+            </div>
+            <header>
+              <h3>The Google Assistant</h3>
+            </header>
+            <p>The RaspCam recognizes voice commands from the user through<br>
+              the Google Assistant by means of a USB microphone. It responds to
+              the<br>
+              commands based on a python script, and outputs through connected
+              speakers.&nbsp;&nbsp; </p>
+            <footer> <a href="#" class="button">Learn More</a> </footer>
+          </article>
+        </div>
+      </div>
+    </section>
+    <!-- Footer -->
+    <footer id="footer">
+      <div class="inner">
+        <h3>Resources</h3>
+         <div>Below is a list of some useful links implored for the project:<br>
+              the Google Assistant by means of a USB microphone. It responds to
+              the<br>
+              commands based on a python script, and outputs through connected
+              speakers.&nbsp;&nbsp; </div>
+
+
+          <ul class="actions">
+            <li><input value="Send Message" class="button alt" type="submit"></li>
+          </ul>
+        </form>
+        <div class="copyright"> © Untitled. Design: <a href="https://templated.co">TEMPLATED</a>.
+          Images: <a href="https://unsplash.com">Unsplash</a>. </div>
+      </div>
+    </footer>
+    <!-- Scripts -->
+    <script src="assets/js/jquery.min.js"></script>
+    <script src="assets/js/skel.min.js"></script>
+    <script src="assets/js/util.js"></script>
+    <script src="assets/js/main.js"></script>
+  </body>
+</html>
