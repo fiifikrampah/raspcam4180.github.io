@@ -64,6 +64,18 @@
 					<!-- Google Assistant Setup -->
 					<div>
 						<h2>Software Setup: The Google Assistant</h2>
+                        <strong>Requirements: Information on setting up your own Google Assistant can be found at the <a href="https://developers.google.com/assistant/sdk/guides/library/python/" target="_blank">Google Assistant SDK website</a>. </strong>
+                        
+                        <h4>General Notes</h4>
+                        <ol>
+                            <li>Remember to always check and if necessary, reconfigure /.asoundrc.</li>
+                            <li>Test speakers constantly. If the volume is too soft, ask Google Assistant to "turn volume to max".</li>
+                            <li>Take note of the device ID and model ID - yes, those are separate!</li>
+                            <li>Create custom commands through array of phrases in hotword.py program.</li>
+                            <li>If at any point you need to register the device, make sure the credentials.json matches client-secrets.json.</li>
+                            <li>Much of the code you will need to recreate the RaspCam is below.</li>
+                        </ol>
+                        
 					</div>
 					<hr class="major" />
 					
