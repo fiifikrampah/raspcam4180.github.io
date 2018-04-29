@@ -1,0 +1,867 @@
+<!DOCTYPE HTML>
+
+<html>
+	<head>
+		<title>The RaspCam ECE 4180 Project by Darko | Indic</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<link rel="stylesheet" href="assets/css/main.css" />
+	</head>
+	<body class="subpage">
+		<!-- Header -->
+		<header id="header">
+			<div class="inner">
+				<a href="index.html" class="logo"><strong>The RaspCam</strong> ECE 4180 Project by Darko | Indic</a>
+				<nav id="nav">
+					<a href="index.html">Home</a>
+					<a href="thehardware.html">The Hardware</a>
+                    <a href="thesoftware.html">The Software</a>
+					<a href="gallery.html">Gallery</a>
+					<!-- <a href="partslist.html">Requirements</a>
+					<a href="elements.html">Implementation</a> -->
+				</nav>
+				<a href="#navPanel" class="navPanelToggle"><span class="fa fa-bars"></span></a>
+			</div>
+		</header>
+		<!-- Three -->
+		<!-- Main -->
+		<section id="main" class="wrapper">
+			<div class="inner">
+				<header class="align-center">
+					<h2>The RaspCam</h2>
+					<p>The Google Assistant Security Camera </p>
+				</header>
+				<!-- Intro -->
+				<div class="row">
+					<section class="align-left">
+						<h2>What's The Main Idea?</h2>
+						<p>Have you ever owned a security camera system and wished you could get more out of it than just mere recording and notification alerts? Possibly have the camera take a picture at a particular instance? Or perhaps the camera system on and off with just your voice? Ideas such a these are what motivated this RaspCam project. The goal was to develop a feedback security system that is very user-friendly and easily operated with the incorporation of the Google Assistant, using a simple device such as a Raspberry Pi along with a camera module, USB microphone and speakers. At the mention of the hotword “Ok Google”, the user will be able to voice out a set of device-specific commands (through the microphone) that have been programmed into the Google Assistant library, to accomplish various tasks such as turn on/off the camera, take a snapshot of the camera’s current view, request a daily summary of the camera’s activity, while simultaneously receiving email notifications for each command. In addition to the custom commands that have been added to the library, the RaspCam still supports native commands of the Google Assistant. This therefore enables the user to interact with the camera just as they would with any other Google Assistant-supported device. </p>
+					</div>
+                    
+					<hr class="major" />
+					<div>
+						<h2>Software Setup: Motion + MotionEye</h2>
+						<strong>Requirements: python 2.7, tornado 3.1+,  jinja2, PIL or pillow, curl, libcurl & pycurl, motion , ffmpeg , v4l-utils (optional). NB: These dependencies can be installed with the command: <code>sudo apt-get package </code> </strong>
+						<br></br>
+						<ol>
+							<li>Install ffmpeg and v4l-utils:<br><code>sudo apt-get install ffmpeg v4l-utils</code></li>
+							<li>Install libmariadbclient18 and libpq5 required by motion:<br> <code>sudo apt-get install libmariadbclient18 libpq5</code></li>
+							<li>Install motion by running the two commands:<br>
+							<pre><code>wget https://github.com/Motion-Project/motion/releases/download/release-4.1.1/pi_stretch_motion_4.1.1-1_armhf.deb</code><code>dpkg -i pi_stretch_motion_4.1.1-1_armhf.deb</code></pre></li>
+							<li>Install the dependencies from the repositories:<br><code>sudo apt-get install python-pip python-dev libssl-dev libcurl4-openssl-dev libjpeg-dev libz-dev</code></li>
+							<li>Install motioneye, which will automatically pull Python dependencies (tornado, jinja2, pillow and pycurl):<br><code>pip install motioneye</code></li>
+							<li>Prepare the configuration directory:<pre><code>mkdir -p /etc/motioneye</code><code>cp /usr/local/share/motioneye/extra/motioneye.conf.sample /etc/motioneye/motioneye.conf</code></pre></li>
+							<li>Prepare the media directory:<br><code>mkdir -p /var/lib/motioneye</code> </li><br>
+							<li>After having successfully followed the installation instructions, the motionEye server should be running on your system and listening on port 8765. Fire up your favorite web browser and visit the following URL (replacing [your_ip] with... well, your system's IP address): <code>http://[your_ip]:8765/</code></li>
+							<li>Use admin with empty password when prompted for credentials.</li>
+							<li>In the motion eye settings, ensure that “email notifications” is turned off. A separate script will be made to handle this. </li>
+							<li>Take some time to admire the motionEye interface and when done, open your favorite text editor to begin programming the RaspCam. </li>
+							<strong>NB: To upgrade to the newest version of motionEye, just issue:<br><code>pip install motioneye –upgrade</code><br><code>systemctl restart motioneye</code></strong>
+						</ol>
+					</div>
+
+					<hr class="major" />
+					<!-- Google Assistant Setup -->
+					<div>
+						<h2>Software Setup: The Google Assistant</h2>
+					</div>
+					<hr class="major" />
+					
+					<div>
+						<h2>General Functionality: Coding and Scripting</h2>
+						<h4>Programs</h4>
+						<p>Below is a list of scripts and the accompanying python files they run:</p>
+									<div class="table-wrapper">
+										<table>
+											<thead>
+												<tr>
+													<th>Script</th>
+													<th>Python File</th>
+													<th>Description</th>
+												</tr>
+											</thead>
+											<tbody>
+												<tr>
+													<td>start.sh</td>
+													<td>startRaspCam.py</td>
+													<td>Activates the motionEye daemon, opens the port and sends the user an email with camera operation instructions</td>
+												</tr>
+												<tr>
+													<td>stop.sh</td>
+													<td>stopRaspCam.py</td>
+													<td>Deactivates the motionEye daemon, closes the port and emails the user with stream details and instructions to access recorded stream</td>
+												</tr>
+												<tr>
+													<td>continued.sh</td>
+													<td> ongoingRaspCam.py</td>
+													<td>Sends the current view of the RaspCam to the user by email</td>
+												</tr>
+												<tr>
+													<td>recent.sh</td>
+													<td>emailRecent.py</td>
+													<td>Sends the user the most recent detection of the RaspCam</td>
+												</tr>
+												<tr>
+													<td>detect.sh</td>
+													<td>emailAlert.py</td>
+													<td>Notifies the user (by email) of any detection. Runs every minute to scan for detections</td>
+												</tr>
+												<tr>
+													<td>clean.sh</td>
+													<td>cleanOld.py</td>
+													<td>Deletes old files (already emailed files) every 2 days</td>
+												</tr>
+											</tbody>
+										</table>
+									</div>
+
+						<p>
+							The bulk of the programming of the RaspCam is done using Python in addition to Bash scripting, and runs primarily from hotword.py. The main coding is done via Python and run via a simple Bash script. Cron jobs are also set up to automate certain key tasks such as motion detection (detect.sh), old files clean up (clean.sh), media folder permission alteration (changePerm.sh), camera stoppage on reboot (stop.sh), and speaker config set up on reboot. The functionality of the camera aspect of the RaspCam is as follows:<br> On reboot, the camera is put in an "off" state by the stop.sh script. A terminal shell can then be used to run the hotword.py (main program that controls the RaspCam). Once started, the user can control the operation of the RaspCam with their voice. At the detection of the keyword 'Ok Google', the RaspCam can be turned on using a set predefined "on" commands which call start.sh in the background, while still allowing 'Ok Google' detection. By navigating to the IP address of the RaspCam, using port 8081, once can view the live stream. If the user wants to take a look at the current view of the camera, they can instruct the RaspCam using any of the predefined commands in hotword.py. Any of such commands will run continued.sh. In the event that the RaspCam detects motion, detect.sh is called.   
+							If the user wants to observe the most recent detection, they can do so using the right set of commands defined in hotword.py which will call recent.sh. To turn off the RaspCam, the "turn off" command must be issued and this will close connection to the IP address as well as stop the motioneye daemon. stop.sh is employed for this. After two days, clean.sh automatically runs and wipes off already emailed files.
+
+						</p>
+						<h4>hotword.py</h4>
+						<pre><code>
+#!/usr/bin/env python
+
+# Copyright (C) 2017 Google Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+
+from __future__ import print_function
+import RPi.GPIO as GPIO 
+import argparse
+import os.path
+import json
+import os
+import google.auth.transport.requests
+import google.oauth2.credentials
+from google.assistant.library import Assistant
+from google.assistant.library.event import EventType
+from google.assistant.library.file_helpers import existing_file
+
+
+DEVICE_API_URL = 'https://embeddedassistant.googleapis.com/v1alpha2'
+today_commands = ['what happened today', 'what happened now']
+capture_commands = ['take a picture', 'take a capture', 'take another capture', 'picture', 'capture']
+on_commands = ['camera on', 'turn on the camera']
+off_commands = ['camera off', 'turn off the camera']
+greetings_commands = ['ECE 4180' or 'ece 4180']
+
+def today():
+    os.system('./speech.sh I am sending you an email with details of what happened. Please wait.')
+    os.system('./recent.sh')
+    os.system('./speech.sh I appreciate your patience! You can check your email inbox now')
+    
+def on():
+    os.system('./speech.sh You got it! I have turned on the camera. Check your email to learn how to use it.')
+    os.system('./start.sh')
+    
+    
+def off():
+    os.system('./speech.sh The camera is now off. I will now send you an email with details of the recorded stream')
+    os.system('./stop.sh')
+    
+    
+def capture():
+    os.system('aplay camerasound.wav')
+    os.system('./speech.sh I emailed you the capture')
+    os.system('./continued.sh')
+    
+def greetings1():
+    os.system('./speech.sh Hi Fifi and Anagha! And, hello Professor Hamblen! It is an honor to be here!')
+    
+def process_device_actions(event, device_id):
+    if 'inputs' in event.args:
+        for i in event.args['inputs']:
+            if i['intent'] == 'action.devices.EXECUTE':
+                for c in i['payload']['commands']:
+                    for device in c['devices']:
+                        if device['id'] == device_id:
+                            if 'execution' in c:
+                                for e in c['execution']:
+                                    if 'params' in e:
+                                        yield e['command'], e['params']
+                                    else:
+                                        yield e['command'], None
+
+
+def process_event(event, device_id, assistant):
+    if event.type == EventType.ON_CONVERSATION_TURN_STARTED:
+        print()
+    if event.type == EventType.ON_RECOGNIZING_SPEECH_FINISHED:
+        print(event.args['text'])
+        if event.args['text'] in today_commands:
+            assistant.stop_conversation()
+            if(event.args['text']=='what happened today' or 'what happened now'):
+                today()
+        elif event.args['text'] in on_commands:
+            assistant.stop_conversation()
+            if(event.args['text']=='camera on' or 'turn on the camera'):
+                on()
+        elif event.args['text'] in capture_commands:
+            assistant.stop_conversation()
+            if(event.args['text']=='take a picture' or 'capture' or 'picture' or 'take a capture' or 'take another capture'):
+                capture()
+        elif event.args['text'] in off_commands:
+            assistant.stop_conversation()
+            if(event.args['text']=='camera off' or 'turn off the camera'):
+                off()
+        elif event.args['text'] in greetings_commands:
+            assistant.stop_conversation()
+            if(event.args['text']=='ECE 4180' or 'ece 4180'):
+                greetings1()
+            
+    print(event)
+   
+    if (event.type == EventType.ON_CONVERSATION_TURN_FINISHED and
+            event.args and not event.args['with_follow_on_turn']):
+        print()
+    if event.type == EventType.ON_DEVICE_ACTION:
+        for command, params in process_device_actions(event, device_id):
+            print('Do command', command, 'with params', str(params)) # Add the following:
+
+def register_device(project_id, credentials, device_model_id, device_id):
+    base_url = '/'.join([DEVICE_API_URL, 'projects', project_id, 'devices'])
+    device_url = '/'.join([base_url, device_id])
+    session = google.auth.transport.requests.AuthorizedSession(credentials)
+    r = session.get(device_url)
+    print(device_url, r.status_code)
+    if r.status_code == 404:
+        print('Registering....')
+        r = session.post(base_url, data=json.dumps({
+            'id': device_id,
+            'model_id': device_model_id,
+            'client_type': 'SDK_LIBRARY'
+        }))
+        if r.status_code != 200:
+            raise Exception('failed to register device: ' + r.text)
+        print('\rDevice registered.')
+
+
+def main():
+    parser = argparse.ArgumentParser(
+        formatter_class=argparse.RawTextHelpFormatter)
+    parser.add_argument('--credentials', type=existing_file,
+                        metavar='OAUTH2_CREDENTIALS_FILE',
+                        default=os.path.join(
+                            os.path.expanduser('~/.config'),
+                            'google-oauthlib-tool',
+                            'credentials.json'
+                        ),
+                        help='Path to store and read OAuth2 credentials')
+    parser.add_argument('--device_model_id', type=str,
+                        metavar='DEVICE_MODEL_ID', required=True,
+                        help='The device model ID registered with Google')
+    parser.add_argument(
+        '--project_id',
+        type=str,
+        metavar='PROJECT_ID',
+        required=False,
+        help='The project ID used to register device instances.')
+    parser.add_argument(
+        '-v',
+        '--version',
+        action='version',
+        version='%(prog)s ' +
+        Assistant.__version_str__())
+
+    args = parser.parse_args()
+    with open(args.credentials, 'r') as f:
+        credentials = google.oauth2.credentials.Credentials(token=None,
+                                                            **json.load(f))
+
+    with Assistant(credentials, args.device_model_id) as assistant:
+        events = assistant.start()
+
+        print('device_model_id:', args.device_model_id + '\n' +
+              'device_id:', assistant.device_id + '\n')
+        GPIO.setmode(GPIO.BOARD)
+        GPIO.setup(16, GPIO.OUT, initial=GPIO.LOW)
+        if args.project_id:
+            register_device(args.project_id, credentials,
+                            args.device_model_id, assistant.device_id)
+
+        for event in events:
+            process_event(event, assistant.device_id, assistant)
+	  				
+if __name__ == '__main__':
+    main()
+
+						</code></pre>
+						<h4>startRaspCam.py</h4>
+						<pre><code>
+import os
+import smtplib
+import socket
+import datetime
+import subprocess
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+from email.mime.base import MIMEBase
+from email import encoders
+
+
+#THIS CODE SENDS INITIAL ALERTS WHEN RASPCAM IS ACTIVATED
+
+#Get IP info:
+def get_ip_address():
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    s.connect(("8.8.8.8", 80))
+    return s.getsockname()[0]
+
+#Format date and time:
+timestamp = datetime.datetime.now()
+ts = timestamp.strftime("%A, %d %B %Y at %I:%M:%S%p")
+
+
+#Get storage info:
+def getDiskSpace():
+    p = os.popen("df -h /")
+    i = 0
+    while 1:
+        i = i +1
+        line = p.readline()
+        if i==2:
+            return(line.split()[3])
+def getDiskPercent():
+    p = os.popen("df -h /")
+    i = 0
+    while 1:
+        i = i +1
+        line = p.readline()
+        if i==2:
+            return(line.split()[4])
+
+#TURN ON CAMERA:
+os.system('sudo systemctl start motioneye')
+
+fromaddr = "raspcam@gmail.com"
+toaddr = "ece4180proj@gmail.com"
+ 
+msg = MIMEMultipart()
+ 
+msg['From'] = fromaddr
+msg['To'] = toaddr
+msg['Subject'] = "RaspCam Activated"
+ 
+body  = "RaspCam has been activated\nConnect to http://{}:8081 to view the live feed from RaspCam!!\n".format(get_ip_address())
+body2 = "View the stream details here:\nRaspcam was started on: {}".format(ts)
+body3 = "Remaining storage space on RaspCam is: {}".format(getDiskSpace()) 
+body4 = "Percent storage used on RaspCam is: {}" .format(getDiskPercent())
+
+
+msg.attach(MIMEText(body, 'plain'))
+msg.attach(MIMEText(body2, 'plain'))
+msg.attach(MIMEText(body3, 'plain'))
+msg.attach(MIMEText(body4, 'plain'))
+#Set up server
+server = smtplib.SMTP('smtp.gmail.com', 587)
+server.starttls()
+server.login(toaddr, "whatis3c3")
+text = msg.as_string()
+server.sendmail(fromaddr, toaddr, text)
+server.quit()
+
+						</code></pre>
+						<h4>stopRaspCam.py</h4>
+						<pre><code>
+import os
+import subprocess
+import smtplib
+import socket
+import datetime
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+from email.mime.base import MIMEBase
+from email import encoders
+
+
+#THIS CODE SENDS FINAL ALERTS WHEN RASPCAM IS DEACTIVATED
+
+#Get IP info:
+def get_ip_address():
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    s.connect(("8.8.8.8", 80))
+    return s.getsockname()[0]
+
+#Format date and time:
+timestamp = datetime.datetime.now()
+ts = timestamp.strftime("%A, %d %B %Y at %I:%M:%S%p")
+
+
+#Get storage info:
+def getDiskSpace():
+    p = os.popen("df -h /")
+    i = 0
+    while 1:
+        i = i +1
+        line = p.readline()
+        if i==2:
+            return(line.split()[3])
+def getDiskPercent():
+    p = os.popen("df -h /")
+    i = 0
+    while 1:
+        i = i +1
+        line = p.readline()
+        if i==2:
+            return(line.split()[4])
+
+#TURN OFF CAMERA:
+os.system('sudo systemctl stop motioneye')
+
+fromaddr = "raspcam@gmail.com"
+toaddr = "ece4180proj@gmail.com"
+ 
+msg = MIMEMultipart()
+ 
+msg['From'] = fromaddr
+msg['To'] = toaddr
+msg['Subject'] = "RaspCam Deactivated"
+ 
+body  = "RaspCam has been deactivated\nConnect to http://{}:8765 to preview recorded feed from RaspCam!!\n".format(get_ip_address())
+body2 = "View the stream details here:\nRaspcam was stopped on: {}".format(ts)
+body3 = "Remaining storage space on RaspCam is: {}".format(getDiskSpace()) 
+body4 = "Percent storage used on RaspCam is: {}" .format(getDiskPercent())
+
+msg.attach(MIMEText(body, 'plain'))
+msg.attach(MIMEText(body2, 'plain'))
+msg.attach(MIMEText(body3, 'plain'))
+msg.attach(MIMEText(body4, 'plain'))
+#Set up server
+server = smtplib.SMTP('smtp.gmail.com', 587)
+server.starttls()
+server.login(toaddr, "whatis3c3")
+text = msg.as_string()
+server.sendmail(fromaddr, toaddr, text)
+server.quit()
+
+						</code></pre>
+						<h4>ongoingRaspCam.py</h4>
+						<pre><code>
+import os
+import smtplib
+import socket
+import datetime
+import time
+import subprocess
+import glob
+
+
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+from email.mime.base import MIMEBase
+from email import encoders
+
+
+
+#Get IP info:
+def get_ip_address():
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    s.connect(("8.8.8.8", 80))
+    return s.getsockname()[0]
+
+#Format date and time:
+timestamp = datetime.datetime.now()
+ts = timestamp.strftime("%A, %d %B %Y at %I:%M:%S%p")
+dateformated = timestamp.strftime("%Y-%m-%d")
+#get temperature measurement:
+def getTemp():
+    temperature = os.popen('vcgencmd measure_temp').readline()
+    return (temperature.replace("temp=","").replace("'C\n"," degress Celsius"))
+#Get storage info:
+def getDiskSpace():
+    p = os.popen("df -h /")
+    i = 0
+    while 1:
+        i = i +1
+        line = p.readline()
+        if i==2:
+            return(line.split()[3])
+def getDiskPercent():
+    p = os.popen("df -h /")
+    i = 0
+    while 1:
+        i = i +1
+        line = p.readline()
+        if i==2:
+            return(line.split()[4])
+
+        
+#GET FILE FROM DIRECTORY: /var/lib/motioneye/Camera1/
+path1 = "/var/lib/motioneye/Camera1/{}".format(dateformated) #/var/lib/motioneye/Camera1/
+
+def listFile(path):
+    extension = ".thumb"
+    os.chdir(path)
+    files = filter(os.path.isfile, os.listdir(path))
+    files = [os.path.join(path, f) for f in files] # add path to each file
+    files.sort(key=lambda x: os.path.getmtime(x), reverse=True)
+    for f in files:
+        if(f.endswith(extension)):
+            i = files.index(f)
+            sortedFiles = files[i]
+            return sortedFiles
+
+filename = listFile(path1)
+#print(filename)
+# get time file was created:
+filetimec = time.ctime(os.path.getctime(path1))
+filetimem = time.ctime(os.path.getmtime(path1))
+filen, filex= os.path.splitext(filename)
+filen = filen + ".jpeg"
+os.rename(filename,filen)
+print(filen)
+fromaddr = "raspcam@gmail.com"
+toaddr = "ece4180proj@gmail.com"
+ 
+msg = MIMEMultipart()
+ 
+msg['From'] = fromaddr
+msg['To'] = toaddr
+msg['Subject'] = "RaspCam Running"
+
+# attach file
+attachment = open(filen, "rb")
+print("Attaching file now")
+part = MIMEBase('application', 'octet-stream')
+part.set_payload((attachment).read())
+encoders.encode_base64(part)
+part.add_header('Content-Disposition', "attachment; filename= %s" % filen)
+msg.attach(part)
+print("File has been attached")
+print("Composing and sending email") 
+
+
+body  = "RaspCam is currently running\nConnect to http://{}:8765 to control the live feed from RaspCam!!\n".format(get_ip_address())
+body2 = "View the stream details here:\nRaspcam was started on: {}".format(ts)
+body3 = "Remaining storage space is: {}".format(getDiskSpace()) 
+body4 = "Percent storage used is: {}" .format(getDiskPercent())
+body5 = "The current temperature of the RaspCam is: {}".format(getTemp())
+body6 = "Attached below is a summary of number of detections per day:"
+msg.attach(MIMEText(body, 'plain'))
+msg.attach(MIMEText(body2, 'plain'))
+msg.attach(MIMEText(body3, 'plain'))
+msg.attach(MIMEText(body4, 'plain'))
+msg.attach(MIMEText(body5, 'plain'))
+msg.attach(MIMEText(body6, 'plain'))
+#Set up server
+server = smtplib.SMTP('smtp.gmail.com', 587)
+server.starttls()
+server.login(toaddr, "whatis3c3")
+text = msg.as_string()
+server.sendmail(fromaddr, toaddr, text)
+server.quit()
+
+						</code></pre>
+						</code></pre>
+						<h4>emailRecent.py</h4>
+						<pre><code>
+import time
+import os
+import shutil
+import glob
+import smtplib
+import socket
+import datetime
+import subprocess
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+from email.mime.base import MIMEBase
+from email import encoders
+
+
+
+#Get IP info:
+def get_ip_address():
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    s.connect(("8.8.8.8", 80))
+    return s.getsockname()[0]
+
+#Format date and time:
+timestamp = datetime.datetime.now()
+ts = timestamp.strftime("%A, %d %B %Y at %I:%M:%S%p")
+dateformated = timestamp.strftime("%Y-%m-%d")
+
+#Get storage info:
+def getDiskSpace():
+    p = os.popen("df -h /")
+    i = 0
+    while 1:
+        i = i +1
+        line = p.readline()
+        if i==2:
+            return(line.split()[3])
+def getDiskPercent():
+    p = os.popen("df -h /")
+    i = 0
+    while 1:
+        i = i +1
+        line = p.readline()
+        if i==2:
+            return(line.split()[4])
+
+
+#GET FILE FROM DIRECTORY: /var/lib/motioneye/Camera1/
+path1 = "/var/lib/motioneye/Camera1/{}".format(dateformated) #/var/lib/motioneye/Camera1/
+
+def listFile(path):
+    extension = ".jpg"
+    os.chdir(path)
+    files = filter(os.path.isfile, os.listdir(path))
+    files = [os.path.join(path, f) for f in files] # add path to each file
+    files.sort(key=lambda x: os.path.getmtime(x), reverse=True)
+    for f in files:
+        if(f.endswith(extension)):
+            i = files.index(f)
+            sortedFiles = files[i]
+            return sortedFiles
+
+filename = listFile(path1)
+print(filename)
+# get time file was created:
+filetimec = time.ctime(os.path.getctime(path1))
+filetimem = time.ctime(os.path.getmtime(path1))
+
+fromaddr = "raspcam@gmail.com"
+toaddr = "ece4180proj@gmail.com"
+ 
+msg = MIMEMultipart()
+ 
+msg['From'] = fromaddr
+msg['To'] = toaddr
+msg['Subject'] = "The most recent detection by RaspCam was on {}!!".format(filetimec)
+
+# attach file
+attachment = open(filename, "rb")
+print("Attaching file now")
+part = MIMEBase('application', 'octet-stream')
+part.set_payload((attachment).read())
+encoders.encode_base64(part)
+part.add_header('Content-Disposition', "attachment; filename= %s" % filename)
+msg.attach(part)
+print("File has been attached")
+print("Composing and sending email") 
+body0 = "Attention!! Motion was detected by RaspCam!\nSee the attached image for further details."
+body1 = "Connect to http://{}:8081 to view the live feed from RaspCam!!\n".format(get_ip_address())
+body2 = "Here are the stream details:\nMotion detected on: {}".format(filetimem)
+body3 = "Remaining storage space on RaspCam is: {}".format(getDiskSpace()) 
+body4 = "Percent storage used on RaspCam is: {}" .format(getDiskPercent())
+
+msg.attach(MIMEText(body0, 'plain'))
+msg.attach(MIMEText(body1, 'plain'))
+msg.attach(MIMEText(body2, 'plain'))
+msg.attach(MIMEText(body3, 'plain'))
+msg.attach(MIMEText(body4, 'plain'))
+#Set up server
+server = smtplib.SMTP('smtp.gmail.com', 587)
+server.starttls()
+server.login(toaddr, "whatis3c3")
+text = msg.as_string()
+server.sendmail(fromaddr, toaddr, text)
+print("Email notification sent successfully!")
+print("Cleaning up and exiting script")
+server.quit()
+
+						</code></pre>
+						<h4>emailAlert.py</h4>
+						<pre><code>
+import time
+import os
+import shutil
+import glob
+import smtplib
+import socket
+import datetime
+import subprocess
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+from email.mime.base import MIMEBase
+from email import encoders
+
+
+
+
+#Get IP info:
+def get_ip_address():
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    s.connect(("8.8.8.8", 80))
+    return s.getsockname()[0]
+
+#Format date and time:
+timestamp = datetime.datetime.now()
+ts = timestamp.strftime("%A, %d %B %Y at %I:%M:%S%p")
+dateformated = timestamp.strftime("%Y-%m-%d")
+
+#Get storage info:
+def getDiskSpace():
+    p = os.popen("df -h /")
+    i = 0
+    while 1:
+        i = i +1
+        line = p.readline()
+        if i==2:
+            return(line.split()[3])
+def getDiskPercent():
+    p = os.popen("df -h /")
+    i = 0
+    while 1:
+        i = i +1
+        line = p.readline()
+        if i==2:
+            return(line.split()[4])
+
+
+#GET FILE FROM DIRECTORY: /var/lib/motioneye/Camera1/
+path1 = "/var/lib/motioneye/Camera1/{}".format(dateformated) #/var/lib/motioneye/Camera1/
+
+def listFile(path):
+    extension = ".jpg"
+    os.chdir(path)
+    files = filter(os.path.isfile, os.listdir(path))
+    files = [os.path.join(path, f) for f in files] # add path to each file
+    files.sort(key=lambda x: os.path.getmtime(x), reverse=True)
+    for f in files:
+        if(f.endswith(extension)):
+            i = files.index(f)
+            sortedFiles = files[i]
+            return sortedFiles
+
+filename = listFile(path1)
+print(filename)
+# get time file was created:
+filetimec = time.ctime(os.path.getctime(path1))
+filetimem = time.ctime(os.path.getmtime(path1))
+
+fromaddr = "raspcam@gmail.com"
+toaddr = "ece4180proj@gmail.com"
+ 
+msg = MIMEMultipart()
+ 
+msg['From'] = fromaddr
+msg['To'] = toaddr
+msg['Subject'] = "Security Alert!! Motion detected by RaspCam on {}!!".format(filetimec)
+
+# attach file
+attachment = open(filename, "rb")
+print("Attaching file now")
+part = MIMEBase('application', 'octet-stream')
+part.set_payload((attachment).read())
+encoders.encode_base64(part)
+part.add_header('Content-Disposition', "attachment; filename= %s" % filename)
+msg.attach(part)
+print("File has been attached")
+print("Composing and sending email") 
+body0 = "Attention!! Motion has been detected by RaspCam!\nSee the attached image for further details."
+body1 = "Connect to http://{}:8081 to view the live feed from RaspCam!!\n".format(get_ip_address())
+body2 = "Here are the stream details:\nMotion detected on: {}".format(filetimem)
+body3 = "Remaining storage space on RaspCam is: {}".format(getDiskSpace()) 
+body4 = "Percent storage used on RaspCam is: {}" .format(getDiskPercent())
+
+msg.attach(MIMEText(body0, 'plain'))
+msg.attach(MIMEText(body1, 'plain'))
+msg.attach(MIMEText(body2, 'plain'))
+msg.attach(MIMEText(body3, 'plain'))
+msg.attach(MIMEText(body4, 'plain'))
+#Set up server
+server = smtplib.SMTP('smtp.gmail.com', 587)
+server.starttls()
+server.login(toaddr, "whatis3c3")
+text = msg.as_string()
+server.sendmail(fromaddr, toaddr, text)
+print("Email notification sent successfully!")
+print("Cleaning up and exiting script")
+server.quit()
+print("Renaming file: ",filename,"to be passed to cleaning script later")
+filen, filex= os.path.splitext(filename)
+filen = filen + "_sent.jpg"
+print("New filename is: ",filen,"and will be deleted shortly by the cleaning script to savespace")
+newpath = "/home/pi/project/deleteme/"
+os.rename(filename,filen)
+shutil.move(filen, newpath)
+
+						</code></pre>
+						<h4>cleanOld.py</h4>
+						<pre><code>
+import os
+import datetime
+
+timestamp = datetime.datetime.now()
+dateformated = timestamp.strftime("%Y-%m-%d")
+files = "/home/pi/project/deleteme/"
+
+print(files)
+os.chdir(files)
+for fh in os.listdir(files):
+    if fh.endswith("_sent.jpg"):
+        print("THIS FILE:",fh,"WILL BE DELETED NOW!!!")
+        os.remove(fh)
+						</code></pre>
+						<h4>asoundConfig.sh</h4>
+						<pre><code>
+#!/bin/bash
+cp /home/pi/project/.asoundrc ~/.asoundrc
+
+# Below is a the ~/.asoundrc (separate) file:
+
+pcm.!default {
+  type asym
+  capture.pcm "mic"
+  playback.pcm "speaker"
+}
+pcm.mic {
+  type plug
+  slave {
+    pcm "hw:1,0"
+  }
+}
+pcm.speaker {
+  type plug
+  slave {
+    pcm "hw:0,0"
+  }
+}
+
+						</code></pre>
+						<h4>changePerm.sh</h4>
+						<pre><code>
+#Since motionEye writing files to /var/lib/motioneye/ requires root permission,
+#recursively grant needed permissions:
+
+#!/bin/bash
+sudo chmod -R a+w /var/lib/motioneye/Camera1/*							
+						</code></pre>
+							<h4>Cron Jobs</h4>
+						<pre><code>
+* * * * * /home/pi/project/scripts/detect.sh
+* * * * 2,4,6 /home/pi/project/scripts/clean.sh
+@reboot  /home/pi/project/scripts/changePerm.sh
+@reboot  /home/pi/project/scripts/stop.sh
+@reboot  /home/pi/project/scripts/asoundConfig.sh
+
+
+						</code></pre>
+					</div>
+
+
+				</div>
+			</section>
+			<!-- Scripts -->
+			<script src="assets/js/jquery.min.js"></script>
+			<script src="assets/js/skel.min.js"></script>
+			<script src="assets/js/util.js"></script>
+			<script src="assets/js/main.js"></script>
+		</body>
+	</html>

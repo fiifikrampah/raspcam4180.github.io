@@ -1,0 +1,84 @@
+<!DOCTYPE HTML>
+
+<html>
+	<head>
+		<title>The RaspCam ECE 4180 Project by Darko | Indic</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<link rel="stylesheet" href="assets/css/main.css" />
+	</head>
+	<body class="subpage">
+		<!-- Header -->
+		<header id="header">
+			<div class="inner">
+				<a href="index.html" class="logo"><strong>The RaspCam</strong> ECE 4180 Project by Darko | Indic</a>
+				<nav id="nav">
+					<a href="index.html">Home</a>
+					<a href="thehardware.html">The Hardware</a>
+                    <a href="thesoftware.html">The Software</a>
+					<a href="gallery.html">Gallery</a>
+					<!-- <a href="partslist.html">Requirements</a>
+					<a href="elements.html">Implementation</a> -->
+				</nav>
+				<a href="#navPanel" class="navPanelToggle"><span class="fa fa-bars"></span></a>
+			</div>
+		</header>
+		<!-- Three -->
+		<!-- Main -->
+		<section id="main" class="wrapper">
+			<div class="inner">
+				<header class="align-center">
+					<h2>The RaspCam</h2>
+					<p>The Google Assistant Security Camera </p>
+				</header>
+				<!-- Intro -->
+				<div class="row">
+					<section class="align-left">
+						<h2>What's The Main Idea?</h2>
+						<p>Have you ever owned a security camera system and wished you could get more out of it than just mere recording and notification alerts? Possibly have the camera take a picture at a particular instance? Or perhaps the camera system on and off with just your voice? Ideas such a these are what motivated this RaspCam project. The goal was to develop a feedback security system that is very user-friendly and easily operated with the incorporation of the Google Assistant, using a simple device such as a Raspberry Pi along with a camera module, USB microphone and speakers. At the mention of the hotword “Ok Google”, the user will be able to voice out a set of device-specific commands (through the microphone) that have been programmed into the Google Assistant library, to accomplish various tasks such as turn on/off the camera, take a snapshot of the camera’s current view, request a daily summary of the camera’s activity, while simultaneously receiving email notifications for each command. In addition to the custom commands that have been added to the library, the RaspCam still supports native commands of the Google Assistant. This therefore enables the user to interact with the camera just as they would with any other Google Assistant-supported device. </p>
+					</div>
+					<hr class="major" />
+					<div >
+						<h2 >Parts List</h2>
+						<ol>
+							<li>Raspberry Pi 3 or Raspberry Pi Zero W</li>
+							<li>8Gb (or larger) microSD card</li>
+							<li>USB microphone</li>
+							<li>4 AA batteries</li>
+							<li>Adafruit Speaker Bonnet for Raspberry Pi</li>
+							<li>Raspberry Pi Camera V2</li>
+						</ol>
+					</div>
+					
+					<hr class="major" />
+
+					<div>
+
+						<h2>Hardware Setup: Raspberry Pi, Camera and Adafruit Speaker Bonnet</h2>
+						<ol>
+							<li>Format your microSD using a freeware such as SD Formatter. Note: If using a an SD card larger than 32GB (SDXC card), you will need to format it with the exFAT filesystem. See further details here: <a href="https://www.raspberrypi.org/documentation/installation/sdxc_formatting.md">https://www.raspberrypi.org/documentation/installation/sdxc_formatting.md</a> </li>
+							<li>Create a NOOBS (New Out Of Box Software) boot disk by downloading a large zip file with NOOBS (not NOOBS lite!) with the RASBIAN disk image file to the 8GB (or larger) uSD card using your PC: <a href="https://www.raspberrypi.org/downloads/noobs/">https://www.raspberrypi.org/downloads/noobs/</a> </li>
+							<li>Unzip the contents of the zip file onto the microSD card and insert it into the Raspberry Pi 3. </li>
+							<li>Plug a USB keyboard, mouse and microphone into any of the USB ports. </li>
+							<li>Connect the Pi to a HDMI supported monitor and proceed with the install of the Raspbian OS.</li>
+							<li>Once the OS install is completed, click on the Raspberry Menu icon and select “Raspberry Pi Configuration” under the “Preferences” tab. </li>
+							<li>When the configuration window appears, click on the Localisation tab </li>
+							<li>Set your location by clicking on “Set Locale”</li>
+							<li>Set your local time by clicking on “Set timezone”</li>
+							<li>Set your keyboard language by clicking on “Set Keyboard”</li>
+							<li>When done, acknowledge the reboot request.</li>
+							<li>Upon boot, follow the instructions on this link to set up the Raspberry Pi Camera: <a href="https://thepihut.com/blogs/raspberry-pi-tutorials/16021420-how-to-install-use-the-raspberry-pi-camera">https://thepihut.com/blogs/raspberry-pi-tutorials/16021420-how-to-install-use-the-raspberry-pi-camera</a></li>
+							<li>Once done, follow the instructions on this link to set up the Adafruit Speaker Bonnet: <a href="https://learn.adafruit.com/adafruit-speaker-bonnet-for-raspberry-pi/overview">https://learn.adafruit.com/adafruit-speaker-bonnet-for-raspberry-pi/overview</a></li>
+						</ol>
+					</div>
+
+					</div>
+				</div>
+			</section>
+			<!-- Scripts -->
+			<script src="assets/js/jquery.min.js"></script>
+			<script src="assets/js/skel.min.js"></script>
+			<script src="assets/js/util.js"></script>
+			<script src="assets/js/main.js"></script>
+		</body>
+	</html>

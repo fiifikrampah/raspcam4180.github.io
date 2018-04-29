@@ -14,7 +14,8 @@
 				<a href="index.html" class="logo"><strong>The RaspCam</strong> ECE 4180 Project by Darko | Indic</a>
 				<nav id="nav">
 					<a href="index.html">Home</a>
-					<a href="aboutproject.html">The Project</a>
+					<a href="aboutproject.html">The Hardware</a>
+                    <a href="thesoftware.html">The Software</a>
 					<a href="gallery.html">Gallery</a>
 					<!-- <a href="partslist.html">Requirements</a>
 					<a href="elements.html">Implementation</a> -->
@@ -70,88 +71,8 @@
 							<li>Once done, follow the instructions on this link to set up the Adafruit Speaker Bonnet: <a href="https://learn.adafruit.com/adafruit-speaker-bonnet-for-raspberry-pi/overview">https://learn.adafruit.com/adafruit-speaker-bonnet-for-raspberry-pi/overview</a></li>
 						</ol>
 					</div>
-					<hr class="major" />
-					<div>
-						<h2>Software Setup: Motion + MotionEye</h2>
-						<strong>Requirements: python 2.7, tornado 3.1+,  jinja2, PIL or pillow, curl, libcurl & pycurl, motion , ffmpeg , v4l-utils (optional). NB: These dependencies can be installed with the command: <code>sudo apt-get package </code> </strong>
-						<br></br>
-						<ol>
-							<li>Install ffmpeg and v4l-utils:<br><code>sudo apt-get install ffmpeg v4l-utils</code></li>
-							<li>Install libmariadbclient18 and libpq5 required by motion:<br> <code>sudo apt-get install libmariadbclient18 libpq5</code></li>
-							<li>Install motion by running the two commands:<br>
-							<pre><code>wget https://github.com/Motion-Project/motion/releases/download/release-4.1.1/pi_stretch_motion_4.1.1-1_armhf.deb</code><code>dpkg -i pi_stretch_motion_4.1.1-1_armhf.deb</code></pre></li>
-							<li>Install the dependencies from the repositories:<br><code>sudo apt-get install python-pip python-dev libssl-dev libcurl4-openssl-dev libjpeg-dev libz-dev</code></li>
-							<li>Install motioneye, which will automatically pull Python dependencies (tornado, jinja2, pillow and pycurl):<br><code>pip install motioneye</code></li>
-							<li>Prepare the configuration directory:<pre><code>mkdir -p /etc/motioneye</code><code>cp /usr/local/share/motioneye/extra/motioneye.conf.sample /etc/motioneye/motioneye.conf</code></pre></li>
-							<li>Prepare the media directory:<br><code>mkdir -p /var/lib/motioneye</code> </li><br>
-							<li>After having successfully followed the installation instructions, the motionEye server should be running on your system and listening on port 8765. Fire up your favorite web browser and visit the following URL (replacing [your_ip] with... well, your system's IP address): <code>http://[your_ip]:8765/</code></li>
-							<li>Use admin with empty password when prompted for credentials.</li>
-							<li>In the motion eye settings, ensure that “email notifications” is turned off. A separate script will be made to handle this. </li>
-							<li>Take some time to admire the motionEye interface and when done, open your favorite text editor to begin programming the RaspCam. </li>
-							<strong>NB: To upgrade to the newest version of motionEye, just issue:<br><code>pip install motioneye –upgrade</code><br><code>systemctl restart motioneye</code></strong>
-						</ol>
-					</div>
-
-					<hr class="major" />
-					<!-- Google Assistant Setup -->
-					<div>
-						<h2>Software Setup: The Google Assistant</h2>
-					</div>
-					<hr class="major" />
 					
-					<div>
-						<h2>General Functionality: Coding and Scripting</h2>
-						<h4>Programs</h4>
-						<p>Below is a list of scripts and the accompanying python files they run:</p>
-									<div class="table-wrapper">
-										<table>
-											<thead>
-												<tr>
-													<th>Script</th>
-													<th>Python File</th>
-													<th>Description</th>
-												</tr>
-											</thead>
-											<tbody>
-												<tr>
-													<td>start.sh</td>
-													<td>startRaspCam.py</td>
-													<td>Activates the motionEye daemon, opens the port and sends the user an email with camera operation instructions</td>
-												</tr>
-												<tr>
-													<td>stop.sh</td>
-													<td>stopRaspCam.py</td>
-													<td>Deactivates the motionEye daemon, closes the port and emails the user with stream details and instructions to access recorded stream</td>
-												</tr>
-												<tr>
-													<td>continued.sh</td>
-													<td> ongoingRaspCam.py</td>
-													<td>Sends the current view of the RaspCam to the user by email</td>
-												</tr>
-												<tr>
-													<td>recent.sh</td>
-													<td>emailRecent.py</td>
-													<td>Sends the user the most recent detection of the RaspCam</td>
-												</tr>
-												<tr>
-													<td>detect.sh</td>
-													<td>emailAlert.py</td>
-													<td>Notifies the user (by email) of any detection. Runs every minute to scan for detections</td>
-												</tr>
-												<tr>
-													<td>clean.sh</td>
-													<td>cleanOld.py</td>
-													<td>Deletes old files (already emailed files) every 2 days</td>
-												</tr>
-											</tbody>
-										</table>
-									</div>
 
-						<p>
-							The bulk of the programming of the RaspCam is done using Python in addition to Bash scripting, and runs primarily from hotword.py. The main coding is done via Python and run via a simple Bash script. Cron jobs are also set up to automate certain key tasks such as motion detection (detect.sh), old files clean up (clean.sh), media folder permission alteration (changePerm.sh), camera stoppage on reboot (stop.sh), and speaker config set up on reboot. The functionality of the camera aspect of the RaspCam is as follows:<br> On reboot, the camera is put in an "off" state by the stop.sh script. A terminal shell can then be used to run the hotword.py (main program that controls the RaspCam). Once started, the user can control the operation of the RaspCam with their voice. At the detection of the keyword 'Ok Google', the RaspCam can be turned on using a set predefined "on" commands which call start.sh in the background, while still allowing 'Ok Google' detection. By navigating to the IP address of the RaspCam, using port 8081, once can view the live stream. If the user wants to take a look at the current view of the camera, they can instruct the RaspCam using any of the predefined commands in hotword.py. Any of such commands will run continued.sh. In the event that the RaspCam detects motion, detect.sh is called.   
-							If the user wants to observe the most recent detection, they can do so using the right set of commands defined in hotword.py which will call recent.sh. To turn off the RaspCam, the "turn off" command must be issued and this will close connection to the IP address as well as stop the motioneye daemon. stop.sh is employed for this. After two days, clean.sh automatically runs and wipes off already emailed files.
-
-						</p>
 						<h4>hotword.py</h4>
 						<pre><code>
 #!/usr/bin/env python
